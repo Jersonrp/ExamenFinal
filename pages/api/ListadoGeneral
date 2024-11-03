@@ -1,0 +1,29 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export default async function handler(req, res) {
+  if (req.method === "GET") {
+    try {
+      // Obtiene información de la tabla InformacionCliente
+      const informacionClientes = await prisma.informacionCliente.findMany({
+        include: {
+          cliente: true, // Incluir datos del cliente si es necesario
+        },
+        orderBy: [
+          { fecha_creacion: "desc" }, // Ordenar por fecha de creación en orden descendente
+          { cliente: { apellidos: "asc" } }, // Luego ordenar por apellido en orden ascendente
+        ],
+      });
+
+      res.status(200).json(informacionClientes);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error al obtener la información" });
+    }
+  } else {
+    // Manejo de métodos HTTP no permitidos
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+}

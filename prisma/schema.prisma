@@ -7,12 +7,23 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+model Cliente {
+    id              Int      @id @default(autoincrement())
+    nombres         String
+    apellidos       String
+    genero          String?
+    fecha_nacimiento DateTime?
+    estado          String?
+    informacion     InformacionCliente[]
+}
 
-model Product {
-  id        Int      @id @default(autoincrement())
-  code      String   @unique
-  name      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model InformacionCliente {
+    id                   Int      @id @default(autoincrement())
+    tipo_informacion     String
+    fecha_creacion       DateTime @default(now())
+    fecha_actualizacion   DateTime @updatedAt
+    usuario_creador      String
+    estado_informacion   String?
+    cliente              Cliente? @relation(fields: [clienteId], references: [id])
+    clienteId           Int?
 }
